@@ -1,7 +1,7 @@
 import {configureStore} from "@reduxjs/toolkit";
 //получаем наш reducer из heroesSlice и называем как heroes
-import heroes from "../components/heroesList/heroesSlice";
 import filters from "../components/heroesFilters/filtersSlice";
+import {apiSlice} from "../api/apiSlice";
 
 // функция автоматически получает store (не весь store, в нем только dispatch и getState)
 const stringMiddleware = (store) => {
@@ -48,12 +48,12 @@ const enhancer = (createStore) => {
 // );
 
 const store = configureStore({
-    reducer: {heroes, filters},
+    reducer: {filters, [apiSlice.reducerPath]: apiSlice.reducer},
     // getDefaultMiddleware включает:
     // serializableStateInvariant - проверяет, что в store нет данных, которых там не должны быть (символы, функции и т.п.)
     // immutableStateInvariant - обнаруживает мутации, которые могут возникнуть в нашем store
     // thunk = встроенный ReduxThunk
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(stringMiddleware),
+    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(stringMiddleware, apiSlice.middleware),
     //включаем только в билде который НЕ продакшн
     devTools: process.env.NODE_ENV !== 'production',
 })
